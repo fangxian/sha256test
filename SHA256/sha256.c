@@ -221,6 +221,7 @@ void sha256_hash(sha256_context *ctx, const void *data, size_t len)
 void sha256_done(sha256_context *ctx, uint8_t *hash)
 {
     register uint32_t i, j;
+    FILE* fp = fopen("refyfx.seed", "w+");
 
     if (ctx != NULL) {
         j = ctx->len % sizeof(ctx->buf);
@@ -245,6 +246,15 @@ void sha256_done(sha256_context *ctx, uint8_t *hash)
         ctx->buf[58] = _shb(ctx->bits[1],  8);
         ctx->buf[57] = _shb(ctx->bits[1], 16);
         ctx->buf[56] = _shb(ctx->bits[1], 24);
+        
+        printf("padder len %d, padder data: ", ctx->len);
+        for(int index=0; index < 64; index++){
+            printf("%02x", ctx->buf[index]);
+            fprintf(fp, "%02x", ctx->buf[index]);
+        }
+        printf("\n");
+        fclose(fp);
+        
         _hash(ctx);
 
         if (hash != NULL) {
